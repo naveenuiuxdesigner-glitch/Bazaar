@@ -1,0 +1,174 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/plus-jakarta-sans';
+@import 'tailwindcss';
+
+/*
+  BAZAAR design tokens
+  A cool navy/slate foundation with controlled accents, each with one job:
+  brand (electric blue) = actions and identity · violet = highlights and membership ·
+  deal (coral) = offers, urgency and stock · save (green) = savings and free delivery ·
+  star (yellow) = ratings only · danger (red) = errors only.
+*/
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: 'Plus Jakarta Sans Variable', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+
+  --color-ink-950: #0b1220;
+  --color-ink-900: #121a2b;
+  --color-ink-800: #1f2a3d;
+  --color-ink-700: #344055;
+  --color-ink-600: #4b566b;
+  --color-ink-500: #667085;
+  --color-ink-400: #98a1b2;
+  --color-ink-300: #c5ccd8;
+  --color-ink-200: #e1e5ec;
+  --color-ink-150: #eaedf2;
+  --color-ink-100: #f1f3f7;
+  --color-ink-50: #f7f8fb;
+  /* One studio backdrop behind every product image, photo or vector, so the catalogue reads as one shoot. */
+  --color-studio: #f2f4f8;
+
+  --color-brand-50: #eef3ff;
+  --color-brand-100: #dde7ff;
+  --color-brand-200: #bccdff;
+  --color-brand-300: #8eaaff;
+  --color-brand-400: #5b82ff;
+  --color-brand-500: #3461ff;
+  --color-brand-600: #2149e8;
+  --color-brand-700: #1a3bc0;
+  --color-brand-800: #182f8f;
+  --color-brand-900: #121f5c;
+
+  --color-violet-50: #f5f1ff;
+  --color-violet-100: #ebe3ff;
+  --color-violet-200: #d6c7ff;
+  --color-violet-400: #9a75ff;
+  --color-violet-500: #7c4dff;
+  --color-violet-600: #6a35f0;
+  --color-violet-700: #5627c7;
+
+  --color-deal-50: #fff3ed;
+  --color-deal-100: #ffe2d4;
+  --color-deal-200: #ffc3a8;
+  --color-deal-400: #ff8a5c;
+  --color-deal-500: #ff6a3d;
+  --color-deal-600: #e9511f;
+  --color-deal-700: #c13f15;
+
+  --color-save-50: #ebf8f1;
+  --color-save-100: #d1f0df;
+  --color-save-500: #1fa463;
+  --color-save-600: #138a52;
+  --color-save-700: #0f7b4a;
+
+  --color-danger-50: #fff1f1;
+  --color-danger-100: #ffdcdc;
+  --color-danger-600: #d92d2d;
+  --color-danger-700: #b42020;
+  --color-danger-800: #8f1a1a;
+
+  --color-star: #f5a524;
+  --color-cyan-glow: #3fd8ff;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --radius-2xl: 20px;
+
+  /* Shadows are tinted with the navy ink so elevation reads cool, not muddy. */
+  --shadow-pop: 0 1px 2px rgb(11 18 32 / 0.06), 0 14px 36px -10px rgb(11 18 32 / 0.22);
+  --shadow-lift: 0 1px 2px rgb(11 18 32 / 0.04), 0 10px 28px -12px rgb(11 18 32 / 0.18);
+  --shadow-card: 0 1px 2px rgb(11 18 32 / 0.04), 0 18px 40px -18px rgb(11 18 32 / 0.28);
+  --shadow-header: 0 1px 0 rgb(11 18 32 / 0.06), 0 8px 24px -16px rgb(11 18 32 / 0.25);
+  --shadow-glow: 0 10px 30px -10px rgb(52 97 255 / 0.55);
+  --shadow-drawer: -24px 0 64px -16px rgb(11 18 32 / 0.28);
+
+  --ease-out-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+
+  --animate-shimmer: shimmer 1.4s linear infinite;
+  @keyframes ph-in {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
+  }
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    scroll-padding-top: 9rem;
+  }
+  body {
+    @apply bg-white font-sans text-ink-900 antialiased;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+  }
+  ::selection {
+    background: var(--color-brand-100);
+    color: var(--color-ink-950);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-600);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  button, [role='button'] {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: not-allowed;
+  }
+  img, svg {
+    display: block;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-[1360px] px-4 sm:px-6 lg:px-8;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--color-ink-100) 0%, var(--color-ink-150) 40%, var(--color-ink-100) 80%);
+    background-size: 800px 100%;
+    @apply animate-shimmer;
+  }
+  /* Identity gradient: electric blue into violet. Used for Bazaar Plus, the logo mark and key highlights only. */
+  .bg-brand-grad {
+    background-image: linear-gradient(135deg, var(--color-brand-500) 0%, var(--color-violet-500) 100%);
+  }
+  .text-brand-grad {
+    background-image: linear-gradient(120deg, var(--color-brand-500), var(--color-violet-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

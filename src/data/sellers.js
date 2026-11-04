@@ -1,0 +1,16 @@
+export const sellers = {
+  retailnet: { id: 'retailnet', name: 'RetailNet Official', rating: 4.8, since: 2017, city: 'Bengaluru' },
+  appario: { id: 'appario', name: 'Apex Digital Retail', rating: 4.7, since: 2016, city: 'Mumbai' },
+  cloudtail: { id: 'cloudtail', name: 'Skyline Electronics', rating: 4.6, since: 2015, city: 'Delhi' },
+  brandstore: { id: 'brandstore', name: 'Brand Store (Authorised)', rating: 4.9, since: 2019, city: 'Gurugram' },
+  stylehub: { id: 'stylehub', name: 'StyleHub Fashions', rating: 4.5, since: 2018, city: 'Jaipur' },
+  urbanthreads: { id: 'urbanthreads', name: 'Urban Threads Co.', rating: 4.4, since: 2020, city: 'Tiruppur' },
+  homecraft: { id: 'homecraft', name: 'HomeCraft Living', rating: 4.6, since: 2018, city: 'Pune' },
+  freshmart: { id: 'freshmart', name: 'FreshMart Wholesale', rating: 4.7, since: 2019, city: 'Hyderabad' },
+  sportsvilla: { id: 'sportsvilla', name: 'SportsVilla', rating: 4.5, since: 2017, city: 'Chandigarh' },
+  pageturner: { id: 'pageturner', name: 'PageTurner Books', rating: 4.8, since: 2014, city: 'Kolkata' },
+  kidzone: { id: 'kidzone', name: 'KidZone Retail', rating: 4.6, since: 2019, city: 'Chennai' },
+  motormate: { id: 'motormate', name: 'MotorMate Accessories', rating: 4.4, since: 2018, city: 'Ahmedabad' },
+  glowup: { id: 'glowup', name: 'GlowUp Beauty', rating: 4.7, since: 2020, city: 'Mumbai' },
+  pawsome: { id: 'pawsome', name: 'Pawsome Pet Co.', rating: 4.6, since: 2021, city: 'Bengaluru' },
+}
