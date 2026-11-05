@@ -135,7 +135,7 @@ export default function Checkout() {
   const preOffer = totals.subtotal - totals.couponDiscount + (delivery?.fee ?? 0)
   const bankForOffer = pay.method === 'card' ? (pay.card.choice === 'new' ? cardBank(pay.card.number) : payments.find((p) => p.id === pay.card.choice)?.bank) : pay.method === 'emi' ? { hdfc: 'HDFC Bank', icici: 'ICICI Bank', sbi: 'SBI Card', axis: 'Axis Bank' }[pay.emi.bank] : null
   const offer = paymentOffer(pay.method, preOffer, bankForOffer)
-  const total = preOffer - (offer?.amount ?? 0)
+  const total = Math.max(0, preOffer - (offer?.amount ?? 0) - totals.exchangeCredit)
 
   if (!cartItems.length && !paying)
     return (
@@ -160,7 +160,7 @@ export default function Checkout() {
   const finish = () => {
     const { info } = paying
     const order = placeOrder({
-      items: cartItems.map((i) => ({ id: i.id, qty: i.qty, size: i.size, color: i.color })),
+      items: cartItems.map((i) => ({ id: i.id, qty: i.qty, size: i.size, color: i.color, exchange: i.exchange })),
       address,
       delivery: {
         option: delivery.id,
@@ -169,7 +169,7 @@ export default function Checkout() {
         eta: delivery.id === 'scheduled' ? delivery.days[schedule.day] : delivery.eta,
       },
       payment: { method: pay.method, label: info.label, short: info.short, status: pay.method === 'cod' ? 'Pay at delivery' : 'Paid', txn: pay.method === 'cod' ? null : `TXN${Date.now().toString().slice(-10)}` },
-      totals: { mrp: totals.mrp, subtotal: totals.subtotal, savings: totals.savings, coupon: totals.couponDiscount, couponCode: totals.couponDiscount ? coupon : null, offer: offer?.amount ?? 0, offerLabel: offer?.label ?? null, delivery: delivery.fee, total, count: totals.count },
+      totals: { mrp: totals.mrp, subtotal: totals.subtotal, savings: totals.savings, exchangeCredit: totals.exchangeCredit, coupon: totals.couponDiscount, couponCode: totals.couponDiscount ? coupon : null, offer: offer?.amount ?? 0, offerLabel: offer?.label ?? null, delivery: delivery.fee, total, count: totals.count },
     })
     if (pay.method === 'card' && pay.card.choice === 'new' && pay.card.save) savePayment({ type: 'card', network: info.network, bank: info.bank ?? 'Card', last4: info.last4, name: pay.card.name, expiry: pay.card.expiry })
     if (pay.method === 'upi' && pay.upi.choice === 'new') savePayment({ type: 'upi', vpa: info.vpa })
@@ -181,7 +181,7 @@ export default function Checkout() {
     <div className="space-y-5">
       <ul className="space-y-3">
         {cartItems.map((i) => (
-          <li key={`${i.id}:${i.size ?? ''}:${i.color ?? ''}`} className="flex gap-3">
+          <li key={`${i.id}:${i.size ?? ''}:${i.color ?? ''}:${i.exchange?.model ?? ''}`} className="flex gap-3">
             <span className="relative size-14 shrink-0 overflow-hidden rounded-md bg-studio">
               <ProductArt src={i.product.colorGalleries?.[i.color]?.[0] ?? i.product.image} kind={i.product.art.kind} color={i.color ?? i.product.art.color} brand={i.product.brand} label={i.product.title} className="size-full p-1" />
               <span className="absolute -right-0 -top-0 grid size-5 place-items-center rounded-bl-md bg-ink-950 text-[11px] font-bold text-white num">{i.qty}</span>
@@ -189,6 +189,7 @@ export default function Checkout() {
             <span className="min-w-0 flex-1">
               <span className="line-clamp-2 text-[13px] leading-[18px] text-ink-800">{i.product.title}</span>
               {i.size && <span className="block text-xs text-ink-500">Size: {i.size}</span>}
+              {i.exchange && <span className="block text-xs font-medium text-save-700">Exchange estimate −{formatPrice(i.exchange.estimatedCredit)}</span>}
               <span className="text-[13px] font-semibold num">{formatPrice(i.product.price * i.qty)}</span>
             </span>
           </li>

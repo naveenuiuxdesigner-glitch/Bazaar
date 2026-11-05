@@ -204,7 +204,7 @@ export function AccountProvider({ children }) {
           userId: user.id,
           placedAt,
           demo: true,
-          items: items.map((i) => snapshotItem(i.id, i.qty, undefined, i.size, i.color)),
+          items: items.map((i) => snapshotItem(i.id, i.qty, undefined, i.size, i.color, i.exchange)),
           address,
           delivery,
           payment,

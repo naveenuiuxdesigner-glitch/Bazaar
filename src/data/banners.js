@@ -1,8 +1,8 @@
 import { productById } from './products'
 import { photo } from './photos'
 
-// An art item with `product` shows that product's studio photo when it has one, and its vector render otherwise.
-const withPhotos = (items) => items.map((p) => ({ ...p, art: p.art.map((a) => ({ ...a, image: a.product ? productById[a.product]?.image ?? null : null })) }))
+// Campaign product art uses a matching catalogue photo; unavailable SKUs are omitted instead of drawn as vector stand-ins.
+const withPhotos = (items) => items.map((p) => ({ ...p, art: p.art.map((a) => ({ ...a, image: a.product ? productById[a.product]?.image ?? null : null, brand: productById[a.product]?.brand, label: productById[a.product]?.title })).filter((a) => a.image) }))
 // A banner with a lifestyle photo (public/photos/<prefix>-<id>.webp) shows that instead of the product art.
 const withLifestyle = (prefix, items) => items.map((p) => ({ ...p, photo: photo(`${prefix}-${p.id}`) }))
 

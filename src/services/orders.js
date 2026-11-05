@@ -98,9 +98,9 @@ export const newOrderId = (t = Date.now()) => {
 
 export const awb = () => `${Math.floor(1e11 + Math.random() * 9e11)}`
 
-export function snapshotItem(id, qty, price, size, color) {
+export function snapshotItem(id, qty, price, size, color, exchange) {
   const p = productById[id]
-  return { id, qty, price: price ?? p.price, mrp: p.mrp, title: p.title, brand: p.brand, seller: p.seller.name, returnDays: p.returns.days, returnPolicy: p.returns.policy, ...(size ? { size } : {}), ...(color ? { color } : {}) }
+  return { id, qty, price: price ?? p.price, mrp: p.mrp, title: p.title, brand: p.brand, seller: p.seller.name, returnDays: p.returns.days, returnPolicy: p.returns.policy, ...(size ? { size } : {}), ...(color ? { color } : {}), ...(exchange ? { exchange } : {}) }
 }
 
 /** Forward-journey events between placement and the planned delivery time. */

@@ -65,16 +65,18 @@ export default function OrderPlaced() {
         </div>
         <ul className="divide-y divide-ink-150 border-t border-ink-150 px-5">
           {order.items.map((i) => (
-            <li key={`${i.id}:${i.size ?? ''}`} className="flex items-center gap-4 py-4">
+            <li key={`${i.id}:${i.size ?? ''}:${i.exchange?.model ?? ''}`} className="flex items-center gap-4 py-4">
               <ItemThumb item={i} className="size-14" />
               <span className="min-w-0 flex-1">
                 <span className="line-clamp-1 text-sm text-ink-900">{i.title}</span>
                 <span className="text-xs text-ink-500">{i.brand}{i.size ? ` · Size ${i.size}` : ''} · Qty {i.qty}</span>
+                {i.exchange && <span className="block text-xs text-save-700">Exchange estimate −{formatPrice(i.exchange.estimatedCredit)} · {i.exchange.brand} {i.exchange.model}</span>}
               </span>
               <span className="text-sm font-semibold num">{formatPrice(i.price * i.qty)}</span>
             </li>
           ))}
         </ul>
+        {order.totals.exchangeCredit > 0 && <p className="border-t border-ink-150 px-5 py-3 text-[13px] font-medium text-save-700">Exchange estimate: −{formatPrice(order.totals.exchangeCredit)} · final value subject to inspection</p>}
         {order.totals.mrp - order.totals.total > 0 && (
           <p className="border-t border-ink-150 px-5 py-3 text-[13px] font-medium text-save-700">You saved {formatPrice(order.totals.mrp - order.totals.total)} on this order</p>
         )}

@@ -22,6 +22,7 @@ import { deliveryLabel, formatPrice } from '../lib/format'
 import { COD_LIMIT, EMI_BANKS, EMI_MIN, EMI_TENURES, emiPlan, isNoCost } from '../data/payments'
 import { SelectField } from '../components/form/Field'
 import { productColorName, productSizeOptions } from '../lib/productOptions'
+import { estimateExchangeCredit, isExchangeEligible } from '../lib/productExchange'
 
 const COMPLEMENTS = {
   mobiles: ['electronics', 'mobiles'],
@@ -305,6 +306,9 @@ export default function Product() {
   const [locOpen, setLocOpen] = useState(false)
   const [emiOpen, setEmiOpen] = useState(false)
   const [added, setAdded] = useState(false)
+  const [exchangeEnabled, setExchangeEnabled] = useState(false)
+  const [exchange, setExchange] = useState({ brand: '', model: '', age: '1–2 years', condition: 'good' })
+  const [exchangeError, setExchangeError] = useState('')
 
   useEffect(() => {
     if (p) {
@@ -313,6 +317,8 @@ export default function Product() {
       setSize('')
       setSizeError('')
       setQty(1)
+      setExchangeEnabled(false)
+      setExchange({ brand: '', model: '', age: '1–2 years', condition: 'good' })
       document.title = `${p.title} · ${p.brand} · BAZAAR`
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -350,26 +356,42 @@ export default function Product() {
 
   const cat = categoryBySlug[p.category]
   const sizeOptions = productSizeOptions(p)
+  const exchangeEligible = isExchangeEligible(p)
+  const exchangeCredit = exchangeEligible ? estimateExchangeCredit(p, exchange.condition, exchange.age) : 0
   const maxQty = Math.min(10, p.stock)
   const recentItems = recent.filter((x) => x !== p.id).map((x) => productById[x]).filter(Boolean)
   const comparing = inCompare(p.id)
 
   const add = () => {
+    if (exchangeEnabled && (!exchange.brand.trim() || !exchange.model.trim())) {
+      setExchangeError('Enter the old device brand and model to continue.')
+      document.getElementById('exchange-brand')?.focus()
+      return
+    }
+    setExchangeError('')
     if (sizeOptions.length && !size) {
       setSizeError('Choose a size to continue.')
       document.getElementById('product-size')?.focus()
       return
     }
-    addToCart(p.id, qty, { size: size || undefined, color: color || undefined })
+    const exchangeOffer = exchangeEnabled ? { ...exchange, deviceType: p.category, estimatedCredit: exchangeCredit } : undefined
+    addToCart(p.id, qty, { size: size || undefined, color: color || undefined, exchange: exchangeOffer })
     setAdded(true)
   }
   const buyNow = () => {
+    if (exchangeEnabled && (!exchange.brand.trim() || !exchange.model.trim())) {
+      setExchangeError('Enter the old device brand and model to continue.')
+      document.getElementById('exchange-brand')?.focus()
+      return
+    }
+    setExchangeError('')
     if (sizeOptions.length && !size) {
       setSizeError('Choose a size to continue.')
       document.getElementById('product-size')?.focus()
       return
     }
-    addToCart(p.id, qty, { silent: true, size: size || undefined, color: color || undefined })
+    const exchangeOffer = exchangeEnabled ? { ...exchange, deviceType: p.category, estimatedCredit: exchangeCredit } : undefined
+    addToCart(p.id, qty, { silent: true, size: size || undefined, color: color || undefined, exchange: exchangeOffer })
     navigate('/checkout')
   }
   const share = async () => {
@@ -449,7 +471,7 @@ export default function Product() {
             <fieldset className="mt-6">
               <legend className="text-sm font-medium text-ink-800">Colour <span className="font-normal text-ink-500">· {productColorName(color)}</span></legend>
               <div className="mt-2 flex gap-2.5">
-                {Object.keys(p.colorGalleries).map((c, i) => {
+                {Object.keys(p.colorGalleries).map((c) => {
                   const name = productColorName(c)
                   return <label key={c} className="cursor-pointer" title={name}>
                     <input type="radio" name="colour" checked={color === c} onChange={() => setColor(c)} className="peer sr-only" />
@@ -459,6 +481,27 @@ export default function Product() {
                 })}
               </div>
             </fieldset>
+          )}
+
+          {exchangeEligible && (
+            <section className="mt-6 rounded-xl border border-brand-200 bg-brand-50/60 p-4" aria-labelledby="exchange-title">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input type="checkbox" checked={exchangeEnabled} onChange={(event) => { setExchangeEnabled(event.target.checked); setExchangeError('') }} className="mt-1 size-4 accent-brand-600" />
+                <span className="min-w-0 flex-1">
+                  <span id="exchange-title" className="block text-sm font-semibold text-ink-950">Exchange an old device</span>
+                  <span className="mt-0.5 block text-xs text-ink-600">Estimated credit up to {formatPrice(exchangeCredit)}. Final value depends on inspection.</span>
+                </span>
+                <span className="text-sm font-bold text-save-700">−{formatPrice(exchangeCredit)}</span>
+              </label>
+              {exchangeEnabled && <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <label className="text-xs font-medium text-ink-700">Old device brand<input id="exchange-brand" value={exchange.brand} onChange={(e) => setExchange((v) => ({ ...v, brand: e.target.value }))} placeholder="e.g. Samsung" className="mt-1 h-10 w-full rounded-md border border-ink-200 bg-white px-3 text-sm" /></label>
+                <label className="text-xs font-medium text-ink-700">Model<input value={exchange.model} onChange={(e) => setExchange((v) => ({ ...v, model: e.target.value }))} placeholder="e.g. Galaxy A52" className="mt-1 h-10 w-full rounded-md border border-ink-200 bg-white px-3 text-sm" /></label>
+                <label className="text-xs font-medium text-ink-700">Device age<select value={exchange.age} onChange={(e) => setExchange((v) => ({ ...v, age: e.target.value }))} className="mt-1 h-10 w-full rounded-md border border-ink-200 bg-white px-3 text-sm"><option>Under 1 year</option><option>1–2 years</option><option>2–4 years</option><option>Over 4 years</option></select></label>
+                <label className="text-xs font-medium text-ink-700">Condition<select value={exchange.condition} onChange={(e) => setExchange((v) => ({ ...v, condition: e.target.value }))} className="mt-1 h-10 w-full rounded-md border border-ink-200 bg-white px-3 text-sm"><option value="excellent">Like new</option><option value="good">Good, working</option><option value="fair">Fair, working</option></select></label>
+              </div>}
+              {exchangeError && <p role="alert" className="mt-2 text-xs font-medium text-deal-700">{exchangeError}</p>}
+              <p className="mt-3 text-[11px] leading-4 text-ink-500">Practice demo estimate only. Exchange is confirmed after a seller inspection; the old device must power on and be handed over at delivery.</p>
+            </section>
           )}
 
           <div className="mt-6 flex items-center gap-4">

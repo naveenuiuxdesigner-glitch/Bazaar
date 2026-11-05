@@ -22,6 +22,7 @@ export function OrderSummary({ totals, extra, children, title = 'Order summary' 
       <dl className="mt-4 space-y-2.5 text-sm">
         <div className="flex justify-between text-ink-600"><dt>Price ({totals.count} {totals.count === 1 ? 'item' : 'items'})</dt><dd className="num">{formatPrice(totals.mrp)}</dd></div>
         {totals.savings > 0 && <div className="flex justify-between text-save-700"><dt>Discount on MRP</dt><dd className="num">−{formatPrice(totals.savings)}</dd></div>}
+        {totals.exchangeCredit > 0 && <div className="flex justify-between text-save-700"><dt>Device exchange estimate</dt><dd className="num">−{formatPrice(totals.exchangeCredit)}</dd></div>}
         {totals.couponDiscount > 0 && <div className="flex justify-between text-save-700"><dt>Coupon</dt><dd className="num">−{formatPrice(totals.couponDiscount)}</dd></div>}
         {extra}
         <div className="flex justify-between text-ink-600"><dt>Delivery</dt><dd className="num">{totals.delivery ? formatPrice(totals.delivery) : <span className="font-medium text-save-700">Free</span>}</dd></div>
@@ -101,7 +102,7 @@ export default function Cart() {
             <AnimatePresence initial={false}>
               {cartItems.map((i) => (
                 <CartLine
-                  key={`${i.id}:${i.size ?? ''}:${i.color ?? ''}`}
+                  key={`${i.id}:${i.size ?? ''}:${i.color ?? ''}:${i.exchange?.model ?? ''}`}
                   item={i}
                   compact={false}
                   note={

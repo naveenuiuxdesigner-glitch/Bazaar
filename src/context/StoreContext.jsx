@@ -20,19 +20,20 @@ const initial = () => ({
 })
 
 function reducer(state, action) {
+  const sameLine = (i) => i.id === action.id && (i.size ?? null) === (action.size ?? null) && (i.color ?? null) === (action.color ?? null) && JSON.stringify(i.exchange ?? null) === JSON.stringify(action.exchange ?? null)
   switch (action.type) {
     case 'cart/add': {
-      const existing = state.cart.find((i) => i.id === action.id && (i.size ?? null) === (action.size ?? null) && (i.color ?? null) === (action.color ?? null))
+      const existing = state.cart.find(sameLine)
       const max = productById[action.id]?.stock ?? 10
       const cart = existing
-        ? state.cart.map((i) => (i.id === action.id && (i.size ?? null) === (action.size ?? null) && (i.color ?? null) === (action.color ?? null) ? { ...i, qty: Math.min(i.qty + (action.qty ?? 1), Math.min(max, 10)) } : i))
-        : [{ id: action.id, qty: action.qty ?? 1, ...(action.size ? { size: action.size } : {}), ...(action.color ? { color: action.color } : {}), addedAt: Date.now() }, ...state.cart]
+        ? state.cart.map((i) => (sameLine(i) ? { ...i, qty: Math.min(i.qty + (action.qty ?? 1), Math.min(max, 10)) } : i))
+        : [{ id: action.id, qty: action.qty ?? 1, ...(action.size ? { size: action.size } : {}), ...(action.color ? { color: action.color } : {}), ...(action.exchange ? { exchange: action.exchange } : {}), addedAt: Date.now() }, ...state.cart]
       return { ...state, cart }
     }
     case 'cart/qty':
-      return { ...state, cart: state.cart.map((i) => (i.id === action.id && (i.size ?? null) === (action.size ?? null) && (i.color ?? null) === (action.color ?? null) ? { ...i, qty: Math.max(1, Math.min(action.qty, 10)) } : i)) }
+      return { ...state, cart: state.cart.map((i) => (sameLine(i) ? { ...i, qty: Math.max(1, Math.min(action.qty, 10)) } : i)) }
     case 'cart/remove':
-      return { ...state, cart: state.cart.filter((i) => i.id !== action.id || !(action.matchVariant && (i.size ?? null) === (action.size ?? null) && (i.color ?? null) === (action.color ?? null))) }
+      return { ...state, cart: state.cart.filter((i) => action.matchVariant ? !sameLine(i) : i.id !== action.id) }
     case 'cart/restore':
       return { ...state, cart: action.cart }
     case 'wishlist/toggle':
@@ -107,8 +108,9 @@ export function StoreProvider({ children }) {
     const couponValid = coupon && subtotal >= coupon.min
     const couponDiscount = couponValid ? coupon.apply(subtotal, cartItems) : 0
     const delivery = subtotal === 0 || subtotal >= 499 ? 0 : 49
+    const exchangeCredit = cartItems.reduce((s, i) => s + Math.min(i.exchange?.estimatedCredit ?? 0, i.product.price) * i.qty, 0)
     const count = cartItems.reduce((s, i) => s + i.qty, 0)
-    return { mrp, subtotal, savings: mrp - subtotal, couponDiscount, couponValid, delivery, total: subtotal - couponDiscount + delivery, count }
+    return { mrp, subtotal, savings: mrp - subtotal, exchangeCredit, couponDiscount, couponValid, delivery, total: Math.max(0, subtotal - couponDiscount + delivery - exchangeCredit), count }
   }, [cartItems, state.coupon])
 
   const api = useMemo(
@@ -130,18 +132,18 @@ export function StoreProvider({ children }) {
       dismissToast,
       inCart: (id) => state.cart.some((i) => i.id === id),
       isWished: (id) => state.wishlist.includes(id),
-      addToCart: (id, qty = 1, { silent = false, open = false, size, color } = {}) => {
-        dispatch({ type: 'cart/add', id, qty, size, color })
+      addToCart: (id, qty = 1, { silent = false, open = false, size, color, exchange } = {}) => {
+        dispatch({ type: 'cart/add', id, qty, size, color, exchange })
         if (open) {
           setToasts([])
           setCartOpen(true)
         }
         if (!silent) toast({ kind: 'cart', productId: id, title: 'Added to cart' })
       },
-      setQty: (id, qty, size, color) => dispatch({ type: 'cart/qty', id, qty, size, color }),
-      removeFromCart: (id, size, color, matchVariant = false) => {
+      setQty: (id, qty, size, color, exchange) => dispatch({ type: 'cart/qty', id, qty, size, color, exchange }),
+      removeFromCart: (id, size, color, matchVariant = false, exchange) => {
         const snapshot = state.cart
-        dispatch({ type: 'cart/remove', id, size, color, matchVariant })
+        dispatch({ type: 'cart/remove', id, size, color, matchVariant, exchange })
         toast({ kind: 'undo', title: 'Removed from cart', productId: id, onUndo: () => dispatch({ type: 'cart/restore', cart: snapshot }) })
       },
       toggleWishlist: (id) => {

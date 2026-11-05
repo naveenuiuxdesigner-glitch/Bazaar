@@ -269,8 +269,19 @@ const parseSpecs = (s) =>
     }),
   )
 
-const imageMatchStopWords = new Set(['the', 'with', 'and', 'for', 'from', 'view', 'image', 'photo', 'studio', 'model', 'product', 'pack', 'set', 'men', 'mens', 'women', 'womens', 'shoe', 'shoes', 'running', 'wireless', 'smart', 'new'])
-const imageTokens = (value) => new Set(value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').split(' ').filter((token) => token.length > 2 && !imageMatchStopWords.has(token)))
+const imageMatchStopWords = new Set(['the', 'with', 'and', 'for', 'from', 'view', 'image', 'photo', 'studio', 'model', 'product', 'pack', 'set', 'men', 'mens', 'women', 'womens', 'shoe', 'shoes', 'running', 'road', 'wireless', 'smart', 'new', 'edt', 'edp', 'eau', 'toilette'])
+const imageStorageNumbers = new Set(['16', '32', '64', '128', '256', '512', '1024', '2048'])
+const imageColors = new Set('black white gray grey blue navy red green purple lavender violet pink silver gold beige cream brown tan graphite titanium midnight starlight rose orange yellow teal ivory mocha sand storm indigo copper'.split(' '))
+const imageColor = (token) => token === 'grey' ? 'gray' : token
+const imageTokens = (value) => new Set(value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/([a-z])(\d)/g, '$1 $2').replace(/(\d)([a-z])/g, '$1 $2').replace(/[^a-z0-9]+/g, ' ').split(' ').filter((token) => (token.length > 1 || /^\d$/.test(token)) && !imageMatchStopWords.has(token)))
+
+function imageModelNumbers(title, wanted) {
+  const measured = new Set()
+  for (const match of title.toLowerCase().matchAll(/(\d+(?:\.\d+)?)\s*(?:gb|tb|kg|mg|ml|mah|hz|w|g|cm|mm|inch(?:es)?|in|l|m|pieces?|pcs?)\b/g)) {
+    for (const part of match[1].split('.')) measured.add(part)
+  }
+  return [...wanted].filter((token) => /\d/.test(token) && !imageStorageNumbers.has(token) && !measured.has(token))
+}
 
 // Avoid showing an asset whose own source title describes a different product or model.
 // Low-confidence files remain on disk for manual review but are not served as product photos.
@@ -278,9 +289,21 @@ function sourceTitleMatchesProduct(row, photo) {
   if (photo.generated) return true
   const wanted = imageTokens(`${row[2]} ${row[3]}`)
   const source = imageTokens(photo.title ?? '')
-  const modelTokens = [...wanted].filter((token) => /\d/.test(token))
-  const sourceModelTokens = [...source].filter((token) => /\d/.test(token))
-  if (modelTokens.length && sourceModelTokens.length && !modelTokens.some((token) => source.has(token))) return false
+  const brand = imageTokens(row[2])
+  const modelTokens = imageModelNumbers(row[3], wanted)
+  if (modelTokens.length && !modelTokens.every((token) => source.has(token))) return false
+  const expectedColors = [...wanted].filter((token) => imageColors.has(token)).map(imageColor)
+  const listedColors = [...source].filter((token) => imageColors.has(token)).map(imageColor)
+  if (expectedColors.length && listedColors.length && !expectedColors.some((color) => listedColors.includes(color))) return false
+  const identityTokens = [...wanted].filter((token) => !brand.has(token) && !/\d/.test(token) && !imageColors.has(token))
+  const identityOverlap = identityTokens.filter((token) => source.has(token)).length
+  if (identityTokens.length && identityOverlap < 1) return false
+  const accessoryTerms = row[0] === 'mobiles'
+    ? ['case', 'cover', 'charger', 'cable', 'protector', 'adapter', 'holder', 'mount', 'skin']
+    : row[0] === 'laptops'
+      ? ['case', 'sleeve', 'bag', 'charger', 'adapter', 'stand', 'skin']
+      : []
+  if (accessoryTerms.some((term) => source.has(term) && !wanted.has(term))) return false
   const overlap = [...wanted].filter((token) => source.has(token)).length
   const union = new Set([...wanted, ...source]).size
   return union > 0 && overlap / union >= 0.25

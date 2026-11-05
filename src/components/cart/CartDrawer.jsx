@@ -26,15 +26,16 @@ export function CartLine({ item, compact = true, onNavigate, note }) {
         </Link>
         {item.size && <p className="mt-1 text-xs text-ink-500">Size: {item.size}</p>}
         {item.color && <p className="mt-1 flex items-center gap-1.5 text-xs text-ink-500"><span className="size-3 rounded-full ring-1 ring-ink-300" style={{ backgroundColor: item.color }} />{productColorName(item.color)}</p>}
+        {item.exchange && <p className="mt-1 text-xs font-medium text-save-700">Exchange estimate: −{formatPrice(item.exchange.estimatedCredit)} · {item.exchange.brand} {item.exchange.model}</p>}
         <div className="mt-auto flex items-end justify-between gap-2 pt-2">
           <div className="inline-flex h-8 items-center rounded-md ring-1 ring-inset ring-ink-200">
-            <button type="button" onClick={() => (item.qty === 1 ? removeFromCart(p.id, item.size, item.color, true) : setQty(p.id, item.qty - 1, item.size, item.color))} aria-label={item.qty === 1 ? `Remove ${p.title}` : 'Decrease quantity'} className="grid h-8 w-8 place-items-center rounded-l-md text-ink-700 hover:bg-ink-100">
+            <button type="button" onClick={() => (item.qty === 1 ? removeFromCart(p.id, item.size, item.color, true, item.exchange) : setQty(p.id, item.qty - 1, item.size, item.color, item.exchange))} aria-label={item.qty === 1 ? `Remove ${p.title}` : 'Decrease quantity'} className="grid h-8 w-8 place-items-center rounded-l-md text-ink-700 hover:bg-ink-100">
               {item.qty === 1 ? <Trash2 className="size-3.5" /> : <Minus className="size-3.5" />}
             </button>
             <span className="w-7 text-center text-[13px] font-semibold num" aria-live="polite" aria-label={`Quantity ${item.qty}`}>
               {item.qty}
             </span>
-            <button type="button" onClick={() => setQty(p.id, item.qty + 1, item.size, item.color)} disabled={item.qty >= Math.min(10, p.stock)} aria-label="Increase quantity" className="grid h-8 w-8 place-items-center rounded-r-md text-ink-700 hover:bg-ink-100 disabled:opacity-35">
+            <button type="button" onClick={() => setQty(p.id, item.qty + 1, item.size, item.color, item.exchange)} disabled={item.qty >= Math.min(10, p.stock)} aria-label="Increase quantity" className="grid h-8 w-8 place-items-center rounded-r-md text-ink-700 hover:bg-ink-100 disabled:opacity-35">
               <Plus className="size-3.5" />
             </button>
           </div>
@@ -54,7 +55,7 @@ export function CartLine({ item, compact = true, onNavigate, note }) {
         )}
       </div>
       {!compact && (
-        <button type="button" onClick={() => removeFromCart(p.id, item.size, item.color, true)} aria-label={`Remove ${p.title}`} className="grid size-8 place-items-center self-start rounded-md text-ink-500 hover:bg-ink-100 hover:text-ink-900">
+        <button type="button" onClick={() => removeFromCart(p.id, item.size, item.color, true, item.exchange)} aria-label={`Remove ${p.title}`} className="grid size-8 place-items-center self-start rounded-md text-ink-500 hover:bg-ink-100 hover:text-ink-900">
           <X className="size-4" />
         </button>
       )}
@@ -238,7 +239,7 @@ export function CartDrawer() {
           <ul className="flex-1 divide-y divide-ink-150 overflow-y-auto px-5">
             <AnimatePresence initial={false}>
               {cartItems.map((item) => (
-                <CartLine key={`${item.id}:${item.size ?? ''}:${item.color ?? ''}`} item={item} onNavigate={close} />
+                <CartLine key={`${item.id}:${item.size ?? ''}:${item.color ?? ''}:${item.exchange?.model ?? ''}`} item={item} onNavigate={close} />
               ))}
             </AnimatePresence>
           </ul>
@@ -256,6 +257,7 @@ export function CartDrawer() {
                   <dd className="num">−{formatPrice(totals.savings)}</dd>
                 </div>
               )}
+              {totals.exchangeCredit > 0 && <div className="flex justify-between text-save-700"><dt>Device exchange estimate</dt><dd className="num">−{formatPrice(totals.exchangeCredit)}</dd></div>}
               {totals.couponDiscount > 0 && (
                 <div className="flex justify-between text-save-700">
                   <dt>Coupon</dt>
