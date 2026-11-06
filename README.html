@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>Bazaar — Project Guide</title>
+  <style>
+    :root{color-scheme:light;--navy:#101a2c;--ink:#233149;--muted:#65738a;--blue:#315bea;--blue-soft:#eef2ff;--green:#087a50;--green-soft:#eaf7f0;--orange:#e95328;--orange-soft:#fff1eb;--line:#e0e6ef;--paper:#fff;--canvas:#f5f7fb;--shadow:0 16px 42px rgba(26,42,70,.08)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:2rem}body{margin:0;background:var(--canvas);color:var(--ink);font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}code{border-radius:5px;background:#f0f3f8;padding:.13rem .38rem;font-size:.9em;color:#283a5b}pre{overflow:auto;border-radius:12px;background:#111a2a;color:#edf2ff;padding:1.1rem 1.25rem;line-height:1.55;font-size:.9rem}pre code{background:none;color:inherit;padding:0}.shell{width:min(1160px,calc(100% - 32px));margin:28px auto 64px}.hero{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(120deg,#101a2c 0%,#263b67 56%,#315bea 100%);padding:42px clamp(24px,5vw,60px);color:white;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;width:330px;height:330px;border-radius:50%;right:-100px;top:-160px;background:rgba(255,255,255,.1);box-shadow:0 0 0 48px rgba(255,255,255,.045),0 0 0 96px rgba(255,255,255,.025)}.eyebrow{position:relative;z-index:1;margin:0 0 8px;color:#c8d5ff;font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.hero h1{position:relative;z-index:1;margin:0;font-size:clamp(2.3rem,6vw,4.25rem);line-height:1.05;letter-spacing:-.055em}.hero p:not(.eyebrow){position:relative;z-index:1;max-width:700px;margin:18px 0 0;color:#e1e8ff;font-size:1.08rem}.hero-chips{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:9px;margin-top:24px}.chip{border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(255,255,255,.1);padding:6px 12px;color:#fff;font-size:.85rem;font-weight:650}.notice{display:flex;gap:13px;align-items:flex-start;margin:22px 0;padding:17px 19px;border:1px solid #ffd4c2;border-radius:14px;background:var(--orange-soft);color:#71331e}.notice strong{display:block;color:#a53e1a}.notice .icon{flex:none;font-size:1.2rem}.layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:22px;align-items:start;margin-top:22px}.toc{position:sticky;top:18px;border:1px solid var(--line);border-radius:16px;background:var(--paper);padding:18px;box-shadow:0 8px 25px rgba(26,42,70,.04)}.toc h2{margin:0 0 10px;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}.toc a{display:block;border-radius:8px;padding:6px 9px;color:#34445f;font-size:.9rem}.toc a:hover{background:var(--blue-soft);text-decoration:none;color:var(--blue)}main{min-width:0}.card{margin:0 0 18px;border:1px solid var(--line);border-radius:17px;background:var(--paper);padding:clamp(20px,3vw,32px);box-shadow:0 8px 25px rgba(26,42,70,.035)}h2{margin:0 0 13px;color:var(--navy);font-size:1.55rem;letter-spacing:-.03em;line-height:1.25}h3{margin:24px 0 8px;color:#1c2b43;font-size:1.08rem;letter-spacing:-.015em}p{margin:9px 0}.muted{color:var(--muted)}.intro{font-size:1.08rem;color:#3e4e67}.command{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:8px;background:#f9faff;padding:8px 11px;color:#263855}ul,ol{padding-left:1.35rem}li{margin:.35rem 0}.feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.feature{border:1px solid var(--line);border-radius:12px;padding:15px;background:linear-gradient(145deg,#fff,#fafbfe)}.feature h3{margin:0 0 5px}.feature p{margin:0;color:var(--muted);font-size:.94rem}.flow{counter-reset:step;list-style:none;padding:0}.flow li{counter-increment:step;position:relative;margin:12px 0;padding:13px 14px 13px 52px;border:1px solid var(--line);border-radius:12px;background:#fbfcff}.flow li:before{content:counter(step);position:absolute;left:14px;top:12px;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;font-weight:800;font-size:.85rem}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{width:100%;border-collapse:collapse;text-align:left;font-size:.94rem}th,td{padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f2f5fa;color:#34445f;font-size:.82rem;letter-spacing:.03em}tr:last-child td{border-bottom:0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:15px 0}.stat{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fafbfe}.stat b{display:block;color:var(--navy);font-size:1.4rem;line-height:1.2}.stat span{display:block;margin-top:5px;color:var(--muted);font-size:.82rem}.status{border-color:#f3c2af;background:#fffaf7}.status b{color:var(--orange)}.good{border-color:#b9e3ce;background:var(--green-soft)}.good b{color:var(--green)}.route-grid{columns:2;column-gap:28px}.route-grid div{break-inside:avoid;padding:7px 0;border-bottom:1px solid #edf0f5}.route-grid code{display:inline-block;min-width:145px}.tag{display:inline-block;border-radius:999px;padding:3px 9px;background:var(--blue-soft);color:#314da7;font-size:.78rem;font-weight:700}.callout{margin:14px 0;padding:14px 16px;border-left:4px solid var(--blue);border-radius:0 10px 10px 0;background:var(--blue-soft)}.callout.warn{border-color:var(--orange);background:var(--orange-soft)}.footer{text-align:center;padding:20px;color:var(--muted);font-size:.86rem}
+    @media(max-width:850px){.layout{grid-template-columns:1fr}.toc{position:static}.toc nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:560px){.shell{width:min(100% - 20px,1160px);margin:10px auto 35px}.hero{border-radius:18px;padding:30px 22px}.feature-grid{grid-template-columns:1fr}.route-grid{columns:1}.card{border-radius:14px}.toc nav{grid-template-columns:1fr 1fr}th,td{padding:8px 10px;font-size:.88rem}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <p class="eyebrow">Project guide · easy overview</p>
+      <h1>Bazaar</h1>
+      <p>A responsive Indian marketplace practice app. This guide explains what shoppers can do, how the main journeys work, and where the project is still a demo.</p>
+      <div class="hero-chips"><span class="chip">700 products</span><span class="chip">20 categories</span><span class="chip">React + Vite</span><span class="chip">Local demo data</span></div>
+    </header>
+
+    <aside class="notice"><span class="icon" aria-hidden="true">ℹ️</span><div><strong>Practice project — no real transactions</strong>Payments, inventory, shipping, accounts, orders, and exchange estimates are simulated in your browser. No money moves and no device pickup is booked.</div></aside>
+
+    <div class="layout">
+      <aside class="toc" aria-label="Contents"><h2>Jump to a section</h2><nav>
+        <a href="#start">Run the app</a><a href="#demo">Demo account</a><a href="#features">What shoppers can do</a><a href="#flow">Shopping flow</a><a href="#exchange">Device exchange</a><a href="#catalogue">Catalogue</a><a href="#images">Product images</a><a href="#routes">Page guide</a><a href="#design">Design system</a><a href="#architecture">How it is built</a><a href="#limitations">Current limits</a><a href="#files">Key files</a>
+      </nav></aside>
+
+      <main>
+        <section class="card" id="start">
+          <h2>1. Run Bazaar on your computer</h2>
+          <p>You need Node.js 20.19+ or 22.12+ and npm. Open a terminal in the Bazaar project folder, then run:</p>
+          <pre><code>npm install
+npm run dev</code></pre>
+          <p>Open the local address Vite prints in your terminal. It is usually <code>http://localhost:5173</code>.</p>
+          <p>Other commands:</p>
+          <ul><li><code>npm run build</code> — prepare a production build in <code>dist/</code>.</li><li><code>npm run preview</code> — preview that build locally.</li><li><code>npm run lint</code> — run Oxlint code checks.</li></ul>
+          <p>For static hosting that needs hash routes, set <code>VITE_HASH_ROUTER=true</code> before building. Normal browser routes are the default.</p>
+        </section>
+
+        <section class="card" id="demo">
+          <h2>2. Try the demo account</h2>
+          <p>The sign-in page has a one-click option, or enter these details:</p>
+          <div class="table-wrap"><table><tbody><tr><th>Email</th><td><code>aarav.sharma@example.com</code></td></tr><tr><th>Password</th><td><code>Bazaar@2026</code></td></tr></tbody></table></div>
+          <p>This sample account includes addresses, saved payment methods, Bazaar Plus membership, and example orders in different delivery states. New accounts are stored only in your browser.</p>
+        </section>
+
+        <section class="card" id="features">
+          <h2>3. What shoppers can do</h2>
+          <div class="feature-grid">
+            <article class="feature"><h3>Discover</h3><p>Browse the homepage campaigns, categories, deals, featured brands, and recommended products.</p></article>
+            <article class="feature"><h3>Search and filter</h3><p>Use suggestions, category/type and brand filters, rating, discount, delivery, stock, and price ranges. Sort by relevance, price, discount, rating, or newest.</p></article>
+            <article class="feature"><h3>Inspect products</h3><p>See specifications, seller, price and MRP, delivery and returns, offers, and recommendations. Fashion and footwear have size selectors.</p></article>
+            <article class="feature"><h3>Save and compare</h3><p>Wishlist products, revisit recently viewed items, and compare up to four products side by side.</p></article>
+            <article class="feature"><h3>Quick view and cart</h3><p>Open quick view from product cards, add items to cart, update quantities, save eligible items for later, and apply coupons.</p></article>
+            <article class="feature"><h3>Orders and account</h3><p>View a simulated tracking timeline, request returns, print invoices, manage account details, and read help FAQs.</p></article>
+          </div>
+          <div class="callout"><strong>Price range:</strong> listing pages offer preset and custom price filters. On product pages, “Price range” compares today's offer with the listed MRP. There is no historical price chart.</div>
+        </section>
+
+        <section class="card" id="flow">
+          <h2>4. The shopping journey</h2>
+          <ol class="flow">
+            <li><strong>Find a product.</strong> Start at Home, browse a category or brand, search, or open Today’s deals.</li>
+            <li><strong>Choose options.</strong> On the product page, select a required size or colour and review details. Verified gallery images appear when the product has them.</li>
+            <li><strong>Add to cart.</strong> Set quantity, review the cart, and optionally use a coupon or save an item for later.</li>
+            <li><strong>Checkout.</strong> Sign in, select or add an address, choose delivery, and check the total.</li>
+            <li><strong>Choose payment.</strong> Select UPI, card, net banking, EMI, or cash on delivery. The page validates entries and simulates payment.</li>
+            <li><strong>Follow the order.</strong> View confirmation, invoice, order details, and the accelerated demo tracking timeline.</li>
+          </ol>
+          <p class="muted">Payment offers, EMI, delivery dates, cancellation, and order progress are all local simulations.</p>
+        </section>
+
+        <section class="card" id="exchange">
+          <h2>5. Device exchange (demo)</h2>
+          <p>Eligible mobile, laptop, TV, appliance, and electronics product pages offer an optional “Exchange an old device” form. Enter the old device’s brand, model, age, and condition to see an example credit estimate.</p>
+          <p>The estimate follows the item through cart, checkout, and the demo order. It is not a real valuation: no trade-in partner is contacted, and no inspection or pickup is arranged.</p>
+        </section>
+
+        <section class="card" id="catalogue">
+          <h2>6. The 700-product catalogue</h2>
+          <p>The catalogue combines 197 original records and 503 deterministic additions. Counts by category:</p>
+          <div class="table-wrap"><table><thead><tr><th>Category</th><th>Items</th><th>Category</th><th>Items</th></tr></thead><tbody>
+            <tr><td>Mobiles</td><td>64</td><td>Electronics</td><td>67</td></tr><tr><td>Laptops</td><td>56</td><td>TVs</td><td>44</td></tr><tr><td>Gaming</td><td>52</td><td>Fashion</td><td>69</td></tr><tr><td>Footwear</td><td>57</td><td>Beauty</td><td>58</td></tr><tr><td>Home</td><td>42</td><td>Furniture</td><td>7</td></tr><tr><td>Kitchen</td><td>45</td><td>Appliances</td><td>51</td></tr><tr><td>Grocery</td><td>46</td><td>Sports</td><td>7</td></tr><tr><td>Books</td><td>8</td><td>Toys</td><td>6</td></tr><tr><td>Baby</td><td>5</td><td>Automotive</td><td>5</td></tr><tr><td>Travel</td><td>6</td><td>Pet supplies</td><td>5</td></tr><tr><th>Total</th><th>700</th><td></td><td></td></tr>
+          </tbody></table></div>
+          <p>Product records include IDs/SKUs, category and subcategory, brand, seller, price/MRP/discount, ratings, stock, specifications, delivery and return details, tags, options, and image metadata. Much of this is seeded practice data, not a live seller feed.</p>
+          <h3>Where product data lives</h3>
+          <ul><li><code>src/data/products.js</code> builds the main product records and image matching rules.</li><li><code>src/data/catalogExpansion.js</code> contains the 503 added records. Keep its category and total-count checks updated when changing it.</li><li><code>src/data/productImages.js</code> maps product IDs to photo files and attribution.</li><li>Place product photos under <code>public/products/</code>. Add only real, matching alternate views or colour photos; don’t duplicate or mirror an image to imply another angle.</li><li><code>src/lib/productOptions.js</code> provides standard clothing and shoe sizes. The demo does not track stock per size.</li></ul>
+        </section>
+
+        <section class="card" id="images">
+          <h2>7. Product images: current status</h2>
+          <p>Images are static local files, not live retailer feeds. Product image matching checks source titles against the product model, colour, product identity, and accessory terms. Unmatched assets are withheld from the product page instead of being presented as the wrong item.</p>
+          <div class="stats">
+            <div class="stat"><b>700</b><span>products audited</span></div>
+            <div class="stat good"><b>505</b><span>valid primary images</span></div>
+            <div class="stat status"><b>195</b><span>without a usable match</span></div>
+            <div class="stat status"><b>1</b><span>with multiple mapped views</span></div>
+          </div>
+          <p>The 195 without a usable match are 99 products with no image file and 96 whose mapped image did not pass product-title matching. There are no duplicate image hashes among the 505 valid images.</p>
+          <div class="callout warn"><strong>Three-angle coverage is not finished.</strong> The gallery can display thumbnails and navigate between genuine image files, but only one product currently has multiple mapped views. Most products do not yet have front, side, back, or detail photos.</div>
+          <p>Image files and credits are in <code>public/products/</code> and <code>src/data/productImages.js</code>. Sources include static product listing images from Amazon India and Flipkart, plus credited Wikimedia Commons and other assets. Homepage lifestyle image credits are in <code>src/data/photoCredits.js</code> and shown on the Credits page.</p>
+        </section>
+
+        <section class="card" id="routes">
+          <h2>8. Page guide</h2>
+          <div class="route-grid">
+            <div><code>/</code> Home</div><div><code>/categories</code> Category directory</div><div><code>/c/:slug</code> Category results</div><div><code>/brand/:brand</code> Brand results</div><div><code>/search</code> Search results</div><div><code>/deals</code> Today’s deals</div><div><code>/p/:id</code> Product detail</div><div><code>/compare</code> Product comparison</div><div><code>/wishlist</code> Saved products</div><div><code>/cart</code> Shopping cart</div><div><code>/recently-viewed</code> Browsing history</div><div><code>/checkout</code> Protected checkout</div><div><code>/order-placed/:id</code> Order confirmation</div><div><code>/orders</code> Order history</div><div><code>/orders/:id</code> Order detail and tracking</div><div><code>/orders/:id/return</code> Return request</div><div><code>/orders/:id/invoice</code> Printable invoice</div><div><code>/account/*</code> Account pages</div><div><code>/login</code> Sign in</div><div><code>/signup</code> Create account</div><div><code>/forgot-password</code> Demo password reset</div><div><code>/notifications</code> Notifications</div><div><code>/help</code> Help and scripted chat</div><div><code>/plus</code> Bazaar Plus</div><div><code>/credits</code> Image credits</div>
+          </div>
+        </section>
+
+        <section class="card" id="design">
+          <h2>9. Look and feel</h2>
+          <div class="feature-grid">
+            <article class="feature"><h3>Colour</h3><p>Navy and slate form the base. Blue marks primary actions, violet Bazaar Plus, coral deals, green savings/delivery, and amber ratings.</p></article>
+            <article class="feature"><h3>Type</h3><p>Plus Jakarta Sans is used for display headings; Inter is used for interface and body text. Prices use tabular numerals.</p></article>
+            <article class="feature"><h3>Shared pieces</h3><p>Buttons, fields, cards, banners, ratings, price labels, drawers, overlays, toasts, and loading skeletons reuse shared components.</p></article>
+            <article class="feature"><h3>Responsive behavior</h3><p>Desktop gets full navigation and a filter sidebar; mobile uses compact navigation, filter/sort sheets, and touch-friendly controls.</p></article>
+          </div>
+          <p>Framer Motion powers selected carousel, drawer, and interaction transitions. Shared motion components respect reduced-motion preferences.</p>
+        </section>
+
+        <section class="card" id="architecture">
+          <h2>10. How the app is built</h2>
+          <p><span class="tag">React 19</span> <span class="tag">Vite 8</span> <span class="tag">Tailwind CSS 4</span> <span class="tag">React Router 7</span> <span class="tag">Framer Motion</span> <span class="tag">Lucide</span> <span class="tag">Oxlint</span></p>
+          <ul><li><code>src/App.jsx</code> defines routes and lazy-loaded pages.</li><li><code>src/components/</code> contains shared navigation, homepage, listing, product, cart, checkout, overlay, and UI components.</li><li><code>src/context/StoreContext.jsx</code> manages cart, wishlist, compare, location, coupon, browsing history, and saved-for-later state.</li><li><code>src/context/AccountContext.jsx</code> manages the demo user, addresses, payment methods, and orders.</li><li><code>src/services/</code> provides local mock catalogue, account, and order behavior.</li><li><code>src/data/</code> stores product data, categories, sellers, banners, payment rules, and image records.</li></ul>
+          <p>Cart and browsing preferences use browser <code>localStorage</code> keys prefixed with <code>bazaar:</code>. Account records use per-user local storage. Clearing browser site data resets the demo.</p>
+        </section>
+
+        <section class="card" id="limitations">
+          <h2>11. What is still a demo or incomplete</h2>
+          <ul><li>No production API, database, payment gateway, inventory service, or fulfilment integration.</li><li>Product, price, rating, review, stock, seller, and delivery data are examples.</li><li>195 products currently have no usable matched image; only one product has a multi-image gallery.</li><li>Search, filters, recommendations, checkout, payment, and order tracking run locally as simulations.</li><li>Exchange estimates are illustrative only. There is no trade-in partner, inspection, or pickup.</li></ul>
+        </section>
+
+        <section class="card" id="files">
+          <h2>12. Useful project files</h2>
+          <div class="table-wrap"><table><thead><tr><th>File</th><th>Purpose</th></tr></thead><tbody>
+            <tr><td><code>src/data/products.js</code></td><td>Base catalogue, product builder, image matching.</td></tr><tr><td><code>src/data/catalogExpansion.js</code></td><td>503 added catalogue records.</td></tr><tr><td><code>src/data/productImages.js</code></td><td>Product photo map and credits.</td></tr><tr><td><code>src/data/banners.js</code></td><td>Homepage and campaign product references.</td></tr><tr><td><code>src/components/listing/filters.js</code></td><td>Listing filter and sort logic.</td></tr><tr><td><code>src/pages/Product.jsx</code></td><td>Product details, gallery, options, price disclosure, exchange form.</td></tr><tr><td><code>src/pages/Checkout.jsx</code></td><td>Delivery, payment, offers, order placement.</td></tr><tr><td><code>src/lib/productExchange.js</code></td><td>Eligible categories and demo exchange estimate.</td></tr><tr><td><code>scripts/auditProductPhotos.mjs</code></td><td>Image coverage and validity report.</td></tr>
+          </tbody></table></div>
+          <p class="muted">The image sourcing utilities are <code>scripts/sourceAmazonImages.mjs</code> and <code>scripts/sourceFlipkartImages.mjs</code>.</p>
+        </section>
+      </main>
+    </div>
+    <footer class="footer">Bazaar project guide · built from the current README.md</footer>
+  </div>
+</body>
+</html>
